@@ -1,0 +1,1 @@
+{"consistency_tests": [{"input": "User: Hi, how are you?\nBot: I'm doing well, thank you! How about you?\n","output": "User: I'm good, thanks for asking!\n"},{"input": "User: What do you like to do in your free time?\nBot: I enjoy reading books and learning new things.\n","output": "User: That's great! What kind of books do you like?\n"}]}

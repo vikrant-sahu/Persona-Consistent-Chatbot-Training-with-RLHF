@@ -1,0 +1,19 @@
+# Kaggle-specific configuration
+kaggle:
+  gpu_enabled: true
+  internet_enabled: true
+  max_gpu_hours: 30
+  dataset_sources:
+    - "bavard/personachat_truecased"
+    - "blended_skill_talk"
+  
+  # Resource optimization for Kaggle
+  optimization:
+    mixed_precision: true
+    gradient_checkpointing: true
+    batch_size_multiplier: 0.8  # Reduce batch size for stability
+    
+  # Output settings
+  output:
+    save_to_kaggle: true
+    public_dataset: true

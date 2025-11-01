@@ -1,0 +1,32 @@
+{
+  "results": {
+    "persona_consistency": {
+      "accuracy": 0.85,
+      "f1_score": 0.82,
+      "precision": 0.80,
+      "recall": 0.84,
+      "examples": [
+        {
+          "input": "What do you like to do in your free time?",
+          "output": "I enjoy painting and hiking.",
+          "expected_persona": "Artistic and adventurous"
+        },
+        {
+          "input": "Tell me about your favorite book.",
+          "output": "My favorite book is 'The Great Gatsby'.",
+          "expected_persona": "Literary enthusiast"
+        }
+      ]
+    },
+    "engagement": {
+      "average_response_time": 2.5,
+      "user_satisfaction": 4.5,
+      "engagement_rate": 0.75
+    },
+    "summary": {
+      "total_interactions": 1000,
+      "successful_interactions": 850,
+      "failed_interactions": 150
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# Dataset paths
+datasets:
+  personachat: "bavard/personachat_truecased"
+  blended_skill_talk: "blended_skill_talk"
+
+# Preprocessing
+preprocessing:
+  max_length: 512
+  min_length: 50
+  train_split: 0.9
+  val_split: 0.05
+  test_split: 0.05
+
+# Output paths
+output:
+  processed: "data/processed"
+  train: "data/processed/train.jsonl"
+  val: "data/processed/val.jsonl"
+  test: "data/processed/test.jsonl"
+  preference: "data/processed/preference_pairs.jsonl"
+  prompts: "data/processed/prompts.jsonl"

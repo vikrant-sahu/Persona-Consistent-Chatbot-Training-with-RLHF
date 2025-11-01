@@ -1,0 +1,21 @@
+# This file lists the Python dependencies required for the Kaggle environment.
+
+numpy
+pandas
+scikit-learn
+torch
+transformers
+datasets
+wandb
+gradio
+matplotlib
+seaborn
+tqdm
+pytorch-lightning
+pyyaml
+jsonschema
+nltk
+spacy
+sentence-transformers
+plotly
+scipy

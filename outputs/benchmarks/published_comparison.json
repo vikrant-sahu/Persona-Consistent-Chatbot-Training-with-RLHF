@@ -1,0 +1,29 @@
+{
+  "comparison_results": {
+    "model": "Persona-Consistent Chatbot",
+    "benchmarks": {
+      "persona_chat": {
+        "score": 0.85,
+        "details": {
+          "consistency": 0.82,
+          "engagement": 0.88
+        }
+      },
+      "convai2": {
+        "score": 0.78,
+        "details": {
+          "consistency": 0.75,
+          "engagement": 0.80
+        }
+      },
+      "daily_dialog": {
+        "score": 0.80,
+        "details": {
+          "consistency": 0.78,
+          "engagement": 0.82
+        }
+      }
+    },
+    "notes": "Scores are based on the latest evaluation metrics and may vary with further fine-tuning."
+  }
+}

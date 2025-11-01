@@ -1,0 +1,23 @@
+# Evaluation settings
+metrics:
+  persona_consistency: true
+  engagement: true
+  perplexity: true
+  bleu: true
+  rouge: true
+  distinct_n: true
+
+# Benchmarks
+benchmarks:
+  personachat: true
+  convai2: true
+
+# Comparison baselines
+baselines:
+  gpt2_medium: 0.25
+  dialogpt_medium: 0.45
+  personagpt: 0.68
+  blenderbot_400m: 0.72
+
+# Output
+output_dir: "outputs/results"

@@ -1,0 +1,38 @@
+{
+  "title": "Persona Consistent Chatbot",
+  "id": "persona-consistent-chatbot",
+  "licenses": [
+    {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  ],
+  "keywords": [
+    "machine learning",
+    "chatbot",
+    "reinforcement learning",
+    "NLP",
+    "persona"
+  ],
+  "dataset": {
+    "title": "Persona Consistent Chatbot Dataset",
+    "description": "This dataset contains various conversational datasets used for training a persona-consistent chatbot. It includes PersonaChat, Blended Skill Talk, and custom persona dialogues.",
+    "version": "1.0",
+    "source": "https://github.com/your-repo/persona-consistent-chatbot",
+    "files": [
+      {
+        "name": "personachat",
+        "description": "Original dataset containing 162k utterances for persona-based conversations."
+      },
+      {
+        "name": "blended_skill_talk",
+        "description": "Dataset containing blended skill conversations for training."
+      },
+      {
+        "name": "custom_personas",
+        "description": "Custom persona dialogues created for specific use cases."
+      }
+    ],
+    "citation": "Please cite this dataset as follows: [Your Citation Here]"
+  }
+}

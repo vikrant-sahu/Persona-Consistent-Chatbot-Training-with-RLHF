@@ -1,0 +1,5 @@
+# Checkpoint Final
+
+This file contains the final model checkpoint for the supervised fine-tuning (SFT) process. It includes the model weights, optimizer state, and any other necessary information to resume training or perform inference.
+
+# Model weights and optimizer state will be saved here.

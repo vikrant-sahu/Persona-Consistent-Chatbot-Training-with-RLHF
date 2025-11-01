@@ -1,0 +1,11 @@
+# Comparison Reports
+
+This directory contains the results of various comparisons made during the evaluation of the models. The reports include metrics and analyses that help in understanding the performance of different models and configurations.
+
+## Contents
+
+- **persona_chat_results.json**: Results from the PersonaChat evaluation.
+- **convai2_results.json**: Results from the ConvAI2 benchmark.
+- **published_comparison.json**: Comparison of the current model's performance against published baselines.
+
+These reports are essential for tracking the progress of model improvements and for providing insights into the effectiveness of different training strategies and configurations.

@@ -1,0 +1,12 @@
+# Checkpoint 500 for Supervised Fine-Tuning
+
+This directory contains the model checkpoint for the supervised fine-tuning (SFT) process at step 500. The checkpoint includes the model weights, optimizer state, and other necessary information to resume training or perform inference.
+
+## Contents
+
+- **pytorch_model.bin**: The model weights saved in PyTorch format.
+- **optimizer.pt**: The state of the optimizer at this checkpoint.
+- **scheduler.pt**: The state of the learning rate scheduler.
+- **training_args.bin**: The training arguments used for this checkpoint.
+
+Make sure to load this checkpoint using the appropriate model class and configuration to continue training or perform inference.

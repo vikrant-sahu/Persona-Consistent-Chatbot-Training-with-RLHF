@@ -1,0 +1,13 @@
+# Checkpoint 1000 for SFT Model
+
+This directory contains the saved state of the model at the 1000th training checkpoint. The files here are essential for resuming training or for inference purposes.
+
+## Contents
+
+- **model_state.pt**: The serialized state of the model parameters.
+- **optimizer_state.pt**: The serialized state of the optimizer parameters.
+- **scheduler_state.pt**: The serialized state of the learning rate scheduler.
+- **training_config.yaml**: Configuration settings used during training.
+- **metrics.json**: Performance metrics recorded at this checkpoint.
+
+These files allow for seamless continuation of training or evaluation of the model's performance at this stage.

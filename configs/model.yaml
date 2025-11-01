@@ -1,0 +1,25 @@
+# Base model configuration
+base:
+  name: "gpt2-medium"
+  cache_dir: "./models/base"
+  max_length: 512
+  device_map: "auto"
+
+# LoRA configuration
+lora:
+  r: 16
+  alpha: 16
+  dropout: 0.1
+  target_modules:
+    - "c_attn"
+    - "c_proj"
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  fan_in_fan_out: true
+
+# Reward model configuration
+reward:
+  base_model: "models/sft/final"
+  num_labels: 1
+  lora_r: 8
+  lora_alpha: 16

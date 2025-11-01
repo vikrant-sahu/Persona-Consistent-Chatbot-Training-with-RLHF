@@ -1,0 +1,26 @@
+{
+  "id": "kernel_id",
+  "title": "Persona Consistent Chatbot",
+  "code_file": "scripts/inference/interactive_chatbot.py",
+  "language": "python",
+  "kernel_type": "notebook",
+  "dataset_sources": [
+    {
+      "name": "PersonaChat",
+      "url": "https://www.microsoft.com/en-us/research/project/personachat/"
+    },
+    {
+      "name": "Blended Skill Talk",
+      "url": "https://arxiv.org/abs/2004.00278"
+    }
+  ],
+  "kernel_version": "1.0",
+  "tags": [
+    "Machine Learning",
+    "Natural Language Processing",
+    "Chatbot",
+    "Reinforcement Learning"
+  ],
+  "license": "MIT",
+  "description": "This kernel demonstrates the training and evaluation of a persona-consistent chatbot using reinforcement learning and supervised fine-tuning techniques."
+}

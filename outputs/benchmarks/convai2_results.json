@@ -1,0 +1,27 @@
+{
+  "results": {
+    "convai2": {
+      "accuracy": 0.85,
+      "f1_score": 0.82,
+      "precision": 0.80,
+      "recall": 0.84,
+      "examples": [
+        {
+          "input": "What do you think about the weather today?",
+          "response": "It's quite nice! Perfect for a walk outside.",
+          "label": "positive"
+        },
+        {
+          "input": "I don't like rainy days.",
+          "response": "I understand, they can be quite gloomy.",
+          "label": "neutral"
+        },
+        {
+          "input": "This is the worst day ever!",
+          "response": "I'm sorry to hear that. Want to talk about it?",
+          "label": "negative"
+        }
+      ]
+    }
+  }
+}
