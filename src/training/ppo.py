@@ -1,11 +1,11 @@
 import torch
-from trl import PPOTrainer, PPOConfig
+from trl import PPOTrainer as TRLPPOTrainer, PPOConfig
 from transformers import AutoTokenizer
 from typing import Dict, List
 import os
 
-class PPOTrainer:
-    """PPO training for RLHF"""
+class PPOTrainerWrapper:
+    """PPO training wrapper for RLHF"""
     
     def __init__(self, policy_model, reward_model, ref_model, config):
         self.policy_model = policy_model
@@ -33,7 +33,7 @@ class PPOTrainer:
             lam=self.config['lam']
         )
         
-        ppo_trainer = PPOTrainer(
+        ppo_trainer = TRLPPOTrainer(
             config=ppo_config,
             model=self.policy_model,
             ref_model=self.ref_model,
