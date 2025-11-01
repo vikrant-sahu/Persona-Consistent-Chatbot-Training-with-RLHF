@@ -62,10 +62,16 @@ class PreferenceGenerator:
                 'context': example['context'],
                 'expected_engagement_markers': ['?', '!', '...']  # Simplified
             })
-        
+
+        # Convert lists to dict format for Dataset.from_dict()
+        def list_to_dict(data_list):
+            if not data_list:
+                return {}
+            return {key: [d[key] for d in data_list] for key in data_list[0].keys()}
+
         return {
-            'consistency_test': Dataset.from_list(consistency_test),
-            'engagement_test': Dataset.from_list(engagement_test)
+            'consistency_test': Dataset.from_dict(list_to_dict(consistency_test)),
+            'engagement_test': Dataset.from_dict(list_to_dict(engagement_test))
         }
     
     def _degrade_response(self, response: str, persona: str) -> str:

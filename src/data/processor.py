@@ -43,8 +43,13 @@ class DataProcessor:
                     'response': target_text,
                     'input_text': input_text
                 })
-        
-        return Dataset.from_list(processed_data)
+
+        # Convert list of dicts to dict of lists for Dataset.from_dict()
+        if not processed_data:
+            return Dataset.from_dict({'text': [], 'persona': [], 'context': [], 'response': [], 'input_text': []})
+
+        dict_data = {key: [d[key] for d in processed_data] for key in processed_data[0].keys()}
+        return Dataset.from_dict(dict_data)
     
     def tokenize(self, data: Dataset) -> Dataset:
         """Tokenize dataset for training"""
@@ -74,11 +79,17 @@ class DataProcessor:
         train_data = data_list[:n_train]
         val_data = data_list[n_train:n_train + n_val]
         test_data = data_list[n_train + n_val:]
-        
+
+        # Convert lists to dict format
+        def list_to_dict(data_list):
+            if not data_list:
+                return {}
+            return {key: [d[key] for d in data_list] for key in data_list[0].keys()}
+
         return DatasetDict({
-            'train': Dataset.from_list(train_data),
-            'validation': Dataset.from_list(val_data),
-            'test': Dataset.from_list(test_data)
+            'train': Dataset.from_dict(list_to_dict(train_data)),
+            'validation': Dataset.from_dict(list_to_dict(val_data)),
+            'test': Dataset.from_dict(list_to_dict(test_data))
         })
     
     def augment(self, data: Dataset) -> Dataset:
@@ -99,8 +110,14 @@ class DataProcessor:
                 augmented_example['persona'] = augmented_persona
                 augmented_example['text'] = example['text'].replace(persona, augmented_persona)
                 augmented_data.append(augmented_example)
-        
-        return Dataset.from_list(list(data) + augmented_data)
+
+        # Combine original and augmented data
+        combined_data = list(data) + augmented_data
+        if not combined_data:
+            return data
+
+        dict_data = {key: [d[key] for d in combined_data] for key in combined_data[0].keys()}
+        return Dataset.from_dict(dict_data)
     
     def format_for_training(self, data: Dataset) -> Dataset:
         """Final formatting before training"""
