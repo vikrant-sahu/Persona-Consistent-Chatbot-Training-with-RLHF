@@ -12,18 +12,41 @@ class DataProcessor:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
     
+    def _get_persona(self, example: Dict) -> List[str]:
+        """Extract persona from example (flexible field names)"""
+        for field in ['personality', 'persona', 'personas', 'user_persona', 'persona_info']:
+            if field in example and example[field]:
+                value = example[field]
+                if isinstance(value, list):
+                    return value
+                elif isinstance(value, str):
+                    return [value]
+        return []
+
+    def _get_conversation(self, example: Dict) -> List[str]:
+        """Extract conversation from example (flexible field names)"""
+        for field in ['history', 'conversation', 'dialogue', 'utterances', 'messages']:
+            if field in example and example[field]:
+                value = example[field]
+                if isinstance(value, list):
+                    return value
+        return []
+
     def preprocess(self, data: Dataset) -> Dataset:
-        """Preprocess raw dataset into training format"""
+        """
+        Preprocess raw dataset into training format
+        Supports both old (bavard/personachat_truecased) and new (google/Synthetic-Persona-Chat) formats
+        """
         processed_data = []
-        
+
         for example in data:
-            # Extract persona and dialogue
-            persona = example.get('personality', [])
-            history = example.get('history', [])
-            
+            # Extract persona and dialogue using flexible field names
+            persona = self._get_persona(example)
+            history = self._get_conversation(example)
+
             if not persona or not history:
                 continue
-                
+
             # Format for training
             persona_str = " | ".join(persona)
             
