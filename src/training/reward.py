@@ -66,9 +66,34 @@ class RewardModelTrainer:
         return loss
     
     def evaluate_ranking_accuracy(self) -> float:
-        """Evaluate ranking accuracy on validation set"""
-        # Simplified implementation
-        return 0.75  # Placeholder
+        """
+        Evaluate ranking accuracy on validation set
+
+        Returns:
+            Accuracy of choosing the preferred response
+        """
+        correct = 0
+        total = 0
+
+        for batch in self.val_data:
+            chosen_inputs = {
+                'input_ids': batch['chosen_input_ids'],
+                'attention_mask': batch['chosen_attention_mask']
+            }
+            rejected_inputs = {
+                'input_ids': batch['rejected_input_ids'],
+                'attention_mask': batch['rejected_attention_mask']
+            }
+
+            # Get rewards
+            chosen_rewards = self.model(**chosen_inputs).logits
+            rejected_rewards = self.model(**rejected_inputs).logits
+
+            # Count correct rankings (chosen > rejected)
+            correct += (chosen_rewards > rejected_rewards).sum().item()
+            total += len(chosen_rewards)
+
+        return correct / total if total > 0 else 0.0
     
     def save_checkpoint(self, step: int):
         """Save training checkpoint"""

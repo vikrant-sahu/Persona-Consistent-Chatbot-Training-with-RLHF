@@ -6,9 +6,10 @@ import os
 
 class SFTTrainer:
     """Supervised fine-tuning with LoRA"""
-    
-    def __init__(self, model, train_data, val_data, config):
+
+    def __init__(self, model, tokenizer, train_data, val_data, config):
         self.model = model
+        self.tokenizer = tokenizer
         self.train_data = train_data
         self.val_data = val_data
         self.config = config
@@ -36,7 +37,7 @@ class SFTTrainer:
         )
         
         data_collator = DataCollatorForLanguageModeling(
-            tokenizer=self.model.tokenizer if hasattr(self.model, 'tokenizer') else None,
+            tokenizer=self.tokenizer,
             mlm=False
         )
         
@@ -70,17 +71,18 @@ class SFTTrainer:
         checkpoint_path = f"{self.config['output_dir']}/checkpoint-{step}"
         self.model.save_pretrained(checkpoint_path)
     
-    def generate_samples(self, prompts: List[str]) -> List[str]:
+    def generate_samples(self, prompts: List[str], max_new_tokens: int = 150, temperature: float = 0.9) -> List[str]:
         """Generate samples from current model"""
         samples = []
         for prompt in prompts:
-            inputs = self.model.tokenizer.encode(prompt, return_tensors="pt")
+            inputs = self.tokenizer.encode(prompt, return_tensors="pt")
             outputs = self.model.generate(
                 inputs,
-                max_new_tokens=150,
+                max_new_tokens=max_new_tokens,
                 do_sample=True,
-                temperature=0.9
+                temperature=temperature,
+                pad_token_id=self.tokenizer.eos_token_id
             )
-            sample = self.model.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            sample = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
             samples.append(sample)
         return samples

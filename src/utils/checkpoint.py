@@ -28,9 +28,10 @@ class CheckpointManager:
             torch.save(optimizer.state_dict(), f"{path}/optimizer.pt")
         
         # Save training metadata
+        import time
         metadata = {
             'step': step,
-            'timestamp': torch.tensor(torch.timestamp())
+            'timestamp': time.time()
         }
         torch.save(metadata, f"{path}/metadata.pt")
         
