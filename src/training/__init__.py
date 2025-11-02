@@ -2,8 +2,8 @@
 Training modules for SFT, reward model, and PPO.
 """
 
-from .sft import SFTrainer
+from .sft import SFTTrainer
 from .reward import RewardModelTrainer
 from .ppo import PPOTrainer
 
-__all__ = ["SFTrainer", "RewardModelTrainer", "PPOTrainer"]
+__all__ = ["SFTTrainer", "RewardModelTrainer", "PPOTrainer"]
