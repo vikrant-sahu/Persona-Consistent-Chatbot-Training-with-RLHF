@@ -14,8 +14,8 @@ class DataProcessor:
     
     def _get_persona(self, example: Dict) -> List[str]:
         """Extract persona from example (flexible field names)"""
-        # Google Synthetic-Persona-Chat uses 'user 1 personas' and 'user 2 personas'
-        for field in ['user 1 personas', 'user 2 personas', 'personality', 'persona', 'personas', 'user_persona', 'persona_info']:
+        # Google Synthetic-Persona-Chat uses 'user_1_persona' and 'user_2_persona' (with underscores)
+        for field in ['user_1_persona', 'user_2_persona', 'personality', 'persona', 'personas', 'user_persona', 'persona_info', 'user 1 personas', 'user 2 personas']:
             if field in example and example[field]:
                 value = example[field]
                 if isinstance(value, list):
@@ -26,24 +26,17 @@ class DataProcessor:
 
     def _get_conversation(self, example: Dict) -> List[str]:
         """Extract conversation from example (flexible field names)"""
-        # Google Synthetic-Persona-Chat uses 'Best Generated Conversation'
-        if 'Best Generated Conversation' in example and example['Best Generated Conversation']:
-            conv = example['Best Generated Conversation']
-            if isinstance(conv, str):
-                # Split by turn markers or newlines
-                turns = [line.strip() for line in conv.split('\n') if line.strip()]
-                return turns
-            elif isinstance(conv, list):
-                return conv
-
-        # Try other field names for backward compatibility
-        for field in ['history', 'conversation', 'dialogue', 'utterances', 'messages']:
+        # Google Synthetic-Persona-Chat uses 'utterances' field
+        # Try all possible field names (ordered by likelihood)
+        for field in ['utterances', 'history', 'conversation', 'dialogue', 'messages', 'Best Generated Conversation']:
             if field in example and example[field]:
                 value = example[field]
                 if isinstance(value, list):
                     return value
                 elif isinstance(value, str):
-                    return [line.strip() for line in value.split('\n') if line.strip()]
+                    # Split by turn markers or newlines
+                    turns = [line.strip() for line in value.split('\n') if line.strip()]
+                    return turns
         return []
 
     def preprocess(self, data: Dataset) -> Dataset:

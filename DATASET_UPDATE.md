@@ -57,8 +57,8 @@ The code now automatically handles different field names:
 
 | Old Dataset | New Dataset | Alternatives Supported |
 |------------|-------------|------------------------|
-| `personality` | `user 1 personas`, `user 2 personas` | `personality`, `persona`, `personas`, `user_persona`, `persona_info` |
-| `history` | `Best Generated Conversation` | `history`, `conversation`, `dialogue`, `utterances`, `messages` |
+| `personality` | `user_1_persona`, `user_2_persona` | `personality`, `persona`, `personas`, `user_persona`, `persona_info`, `user 1 personas`, `user 2 personas` |
+| `history` | `utterances` | `history`, `conversation`, `dialogue`, `utterances`, `messages`, `Best Generated Conversation` |
 
 ## Testing
 
@@ -107,19 +107,24 @@ If you encounter any issues with the dataset update, please check:
 
 The Google Synthetic-Persona-Chat dataset has the following fields:
 
-- **`user 1 personas`**: List of persona traits for the first user
-- **`user 2 personas`**: List of persona traits for the second user  
-- **`Best Generated Conversation`**: String containing the conversation with newline-separated turns
+- **`user_1_persona`**: List of persona traits for the first user (note: underscore, singular)
+- **`user_2_persona`**: List of persona traits for the second user (note: underscore, singular)
+- **`utterances`**: List of strings containing the conversation turns
 
 Example:
 ```python
 example = dataset['train'][0]
 print(example.keys())
-# dict_keys(['user 1 personas', 'user 2 personas', 'Best Generated Conversation'])
+# dict_keys(['user_1_persona', 'user_2_persona', 'utterances'])
 
-print(example['user 1 personas'])
+print(example['user_1_persona'])
 # ['I love hiking', 'I have two dogs', ...]
 
-print(example['Best Generated Conversation'])
-# "User: Hi!\nAssistant: Hello! How are you?\n..."
+print(example['user_2_persona'])
+# ['I enjoy reading', 'I work as a teacher', ...]
+
+print(example['utterances'])
+# ["Hi there!", "Hello! How are you?", "I'm great, thanks!", ...]
 ```
+
+**Important**: The helper functions in the code automatically check for these field names first, then fall back to alternative names for backward compatibility.
