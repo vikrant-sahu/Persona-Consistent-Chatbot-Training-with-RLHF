@@ -5,46 +5,93 @@ import os
 
 class DatasetLoader:
     """Load and cache datasets from HuggingFace"""
-    
+
     def __init__(self, cache_dir: str = "./data/raw"):
         self.cache_dir = cache_dir
         os.makedirs(cache_dir, exist_ok=True)
-    
-    def load_personachat(self, split: str = 'train') -> Dataset:
-        """Load PersonaChat dataset"""
-        return load_dataset("bavard/personachat_truecased", split=split, cache_dir=self.cache_dir)
-    
+
+    def load_personachat(self, split: str = 'train', use_synthetic: bool = True) -> Dataset:
+        """
+        Load PersonaChat dataset
+
+        Args:
+            split: Dataset split ('train', 'validation', 'test')
+            use_synthetic: If True, use google/Synthetic-Persona-Chat (recommended)
+                          If False, use old bavard/personachat_truecased
+
+        Returns:
+            Dataset with persona conversations
+        """
+        if use_synthetic:
+            # Use new Google Synthetic-Persona-Chat dataset (better quality, more diverse)
+            dataset_name = "google/Synthetic-Persona-Chat"
+        else:
+            # Legacy dataset (kept for backward compatibility)
+            dataset_name = "bavard/personachat_truecased"
+
+        return load_dataset(dataset_name, split=split, cache_dir=self.cache_dir)
+
     def load_blended_skill_talk(self, split: str = 'train') -> Dataset:
         """Load Blended Skill Talk dataset"""
         return load_dataset("blended_skill_talk", split=split, cache_dir=self.cache_dir)
-    
+
     def load_custom(self, path: str) -> List[Dict]:
         """Load custom persona dataset"""
         if os.path.exists(path):
             with open(path, 'r') as f:
                 return [json.loads(line) for line in f]
         return []
-    
+
+    def get_persona_field(self, example: Dict) -> List[str]:
+        """
+        Get persona traits from an example, handling different field names
+
+        Returns:
+            List of persona trait strings
+        """
+        # Try different possible field names (ordered by likelihood)
+        for field in ['personality', 'persona', 'personas', 'user_persona', 'persona_info']:
+            if field in example and example[field]:
+                value = example[field]
+                if isinstance(value, list):
+                    return value
+                elif isinstance(value, str):
+                    return [value]
+        return []
+
+    def get_conversation_field(self, example: Dict) -> List[str]:
+        """
+        Get conversation/dialogue from an example, handling different field names
+
+        Returns:
+            List of conversation turns
+        """
+        # Try different possible field names (ordered by likelihood)
+        for field in ['history', 'conversation', 'dialogue', 'utterances', 'messages']:
+            if field in example and example[field]:
+                value = example[field]
+                if isinstance(value, list):
+                    return value
+        return []
+
     def extract_personas(self, data: Dataset) -> List[str]:
-        """Extract persona traits from dataset"""
+        """
+        Extract persona traits from dataset
+        Supports multiple field names for compatibility with different datasets
+        """
         personas = set()
         for example in data:
-            if 'personality' in example:
-                personas.update(example['personality'])
-            elif 'persona' in example:
-                if isinstance(example['persona'], list):
-                    personas.update(example['persona'])
-                else:
-                    personas.add(example['persona'])
+            persona_traits = self.get_persona_field(example)
+            personas.update(persona_traits)
         return list(personas)
-    
+
     def save_processed_data(self, data: List[Dict], file_path: str):
         """Save processed data to JSONL"""
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w') as f:
             for item in data:
                 f.write(json.dumps(item) + '\n')
-    
+
     def load_processed_data(self, file_path: str) -> List[Dict]:
         """Load processed data from JSONL"""
         data = []
