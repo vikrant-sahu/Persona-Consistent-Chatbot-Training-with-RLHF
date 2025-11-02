@@ -57,8 +57,8 @@ The code now automatically handles different field names:
 
 | Old Dataset | New Dataset | Alternatives Supported |
 |------------|-------------|------------------------|
-| `personality` | `persona` | `personalities`, `user_persona`, `persona_info` |
-| `history` | `conversation` | `dialogue`, `utterances`, `messages` |
+| `personality` | `user 1 personas`, `user 2 personas` | `personality`, `persona`, `personas`, `user_persona`, `persona_info` |
+| `history` | `Best Generated Conversation` | `history`, `conversation`, `dialogue`, `utterances`, `messages` |
 
 ## Testing
 
@@ -102,3 +102,24 @@ If you encounter any issues with the dataset update, please check:
 
 **Last Updated**: 2025-01-02  
 **Version**: 2.0.0
+
+## Actual Dataset Structure
+
+The Google Synthetic-Persona-Chat dataset has the following fields:
+
+- **`user 1 personas`**: List of persona traits for the first user
+- **`user 2 personas`**: List of persona traits for the second user  
+- **`Best Generated Conversation`**: String containing the conversation with newline-separated turns
+
+Example:
+```python
+example = dataset['train'][0]
+print(example.keys())
+# dict_keys(['user 1 personas', 'user 2 personas', 'Best Generated Conversation'])
+
+print(example['user 1 personas'])
+# ['I love hiking', 'I have two dogs', ...]
+
+print(example['Best Generated Conversation'])
+# "User: Hi!\nAssistant: Hello! How are you?\n..."
+```
