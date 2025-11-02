@@ -43,21 +43,33 @@ class PreferenceGenerator:
         
         return prompts
     
-    def create_test_sets(self, data: Dataset) -> Dict[str, Dataset]:
-        """Create test sets for evaluation"""
+    def create_test_sets(self, data: Dataset, consistency_size: int = 500, engagement_size: int = 300) -> Dict[str, Dataset]:
+        """
+        Create test sets for evaluation
+
+        Args:
+            data: Source dataset
+            consistency_size: Number of examples for consistency test
+            engagement_size: Number of examples for engagement test
+
+        Returns:
+            Dictionary with test datasets
+        """
         # Create persona consistency test
         consistency_test = []
-        
-        for example in data[:500]:  # Use first 500 examples for testing
+
+        for example in data[:consistency_size]:
             consistency_test.append({
                 'persona': example['persona'],
                 'context': example['context'],
                 'expected_response': example['response']
             })
-        
+
         # Create engagement test
         engagement_test = []
-        for example in data[500:800]:
+        engagement_start = consistency_size
+        engagement_end = consistency_size + engagement_size
+        for example in data[engagement_start:engagement_end]:
             engagement_test.append({
                 'context': example['context'],
                 'expected_engagement_markers': ['?', '!', '...']  # Simplified
