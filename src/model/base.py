@@ -3,10 +3,15 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 from typing import Dict, Any
 
 def load_base_model(config: Dict) -> Any:
-    """Load base model from config"""
+    """Load base model from config
+
+    Note: Always loads in FP32. Use Trainer's fp16/bf16 settings for mixed precision.
+    This avoids gradient scaling conflicts during training.
+    """
     model_name = config['name']
-    torch_dtype = torch.float16 if config.get('fp16', True) else torch.float32
-    
+    # Always use FP32 for model loading - let Trainer handle mixed precision
+    torch_dtype = torch.float32
+
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         torch_dtype=torch_dtype,

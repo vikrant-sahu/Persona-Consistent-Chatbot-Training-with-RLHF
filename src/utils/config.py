@@ -79,7 +79,8 @@ def get_default_config() -> Dict[str, Any]:
             'learning_rate': 2.0e-4,
             'warmup_steps': 500,
             'weight_decay': 0.01,
-            'fp16': True,
+            'fp16': False,
+            'bf16': False,
             'logging_steps': 50,
             'eval_steps': 500,
             'save_steps': 1000
