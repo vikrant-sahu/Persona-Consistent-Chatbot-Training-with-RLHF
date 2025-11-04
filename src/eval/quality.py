@@ -45,9 +45,10 @@ class QualityEvaluator:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
+        # Always use FP32 for evaluation models to avoid precision issues
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path,
-            torch_dtype=torch.float16,
+            torch_dtype=torch.float32,
             device_map='auto'
         )
         self.model.eval()

@@ -26,7 +26,8 @@ class SFTTrainer:
             warmup_steps=self.config.get('warmup_steps', 500),
             weight_decay=self.config.get('weight_decay', 0.01),
             max_grad_norm=self.config.get('max_grad_norm', 1.0),
-            fp16=self.config.get('fp16', True),
+            fp16=self.config.get('fp16', False),
+            bf16=self.config.get('bf16', False),
             logging_steps=self.config.get('logging_steps', 50),
             eval_steps=self.config.get('eval_steps', 500),
             save_steps=self.config.get('save_steps', 1000),
@@ -50,16 +51,29 @@ class SFTTrainer:
         )
         
         # Start training
-        trainer.train()
-        
+        train_result = trainer.train()
+
         # Save final model
         final_path = os.path.join(training_args.output_dir, "final")
         trainer.save_model(final_path)
-        
-        return {
-            'train_loss': trainer.state.log_history[-1]['loss'],
-            'eval_loss': trainer.state.log_history[-2]['eval_loss'] if len(trainer.state.log_history) > 1 else None
-        }
+
+        # Extract metrics safely from log history
+        metrics = {}
+        if hasattr(trainer.state, 'log_history') and len(trainer.state.log_history) > 0:
+            # Find last training loss
+            for entry in reversed(trainer.state.log_history):
+                if 'loss' in entry and 'train_loss' not in metrics:
+                    metrics['train_loss'] = entry['loss']
+                if 'eval_loss' in entry and 'eval_loss' not in metrics:
+                    metrics['eval_loss'] = entry['eval_loss']
+                if 'train_loss' in metrics and 'eval_loss' in metrics:
+                    break
+
+        # Add training result metrics if available
+        if hasattr(train_result, 'metrics'):
+            metrics.update(train_result.metrics)
+
+        return metrics
     
     def evaluate(self) -> Dict:
         """Evaluate model on validation set"""

@@ -44,7 +44,12 @@ class DataProcessor:
         Preprocess raw dataset into training format
         Supports both old (bavard/personachat_truecased) and new (google/Synthetic-Persona-Chat) formats
         """
+        if len(data) == 0:
+            print("Warning: Empty dataset passed to preprocess()")
+            return Dataset.from_dict({'text': [], 'persona': [], 'context': [], 'response': [], 'input_text': []})
+
         processed_data = []
+        skipped_examples = 0
 
         for example in data:
             # Extract persona and dialogue using flexible field names
@@ -52,20 +57,21 @@ class DataProcessor:
             history = self._get_conversation(example)
 
             if not persona or not history:
+                skipped_examples += 1
                 continue
 
             # Format for training
             persona_str = " | ".join(persona)
-            
+
             # Create training examples for each turn
             for i in range(1, len(history)):
                 context = history[:i]
                 response = history[i]
-                
+
                 input_text = f"[PERSONA] {persona_str} [DIALOGUE] {' [SEP] '.join(context)}"
                 target_text = response
                 full_text = f"{input_text} [RESPONSE] {target_text}"
-                
+
                 processed_data.append({
                     'text': full_text,
                     'persona': persona_str,
@@ -74,26 +80,42 @@ class DataProcessor:
                     'input_text': input_text
                 })
 
+        # Log statistics
+        if skipped_examples > 0:
+            print(f"Skipped {skipped_examples}/{len(data)} examples due to missing persona or dialogue")
+
         # Convert list of dicts to dict of lists for Dataset.from_dict()
         if not processed_data:
+            print("Warning: No valid examples found after preprocessing!")
             return Dataset.from_dict({'text': [], 'persona': [], 'context': [], 'response': [], 'input_text': []})
 
+        print(f"Preprocessed {len(processed_data)} training examples from {len(data)} raw examples")
         dict_data = {key: [d[key] for d in processed_data] for key in processed_data[0].keys()}
         return Dataset.from_dict(dict_data)
     
     def tokenize(self, data: Dataset) -> Dataset:
-        """Tokenize dataset for training"""
+        """Tokenize dataset for training
+
+        Note: Does not use return_tensors="pt" when batched=True as this causes
+        "Cannot convert list of tensors" errors. The Trainer handles tensor
+        conversion automatically during training.
+        """
+        if len(data) == 0:
+            print("Warning: Empty dataset passed to tokenize()")
+            return data
+
         max_length = self.config.get('max_length', 512)
-        
+
         def tokenize_function(examples):
+            # Don't use return_tensors="pt" with batched=True - causes tensor shape errors
+            # The Trainer will handle tensor conversion during training
             return self.tokenizer(
                 examples['text'],
                 truncation=True,
                 padding='max_length',
-                max_length=max_length,
-                return_tensors="pt"
+                max_length=max_length
             )
-        
+
         return data.map(tokenize_function, batched=True)
     
     def create_splits(self, data: Dataset) -> DatasetDict:
@@ -124,28 +146,38 @@ class DataProcessor:
     
     def augment(self, data: Dataset) -> Dataset:
         """Data augmentation for robustness"""
+        if len(data) == 0:
+            print("Warning: Empty dataset passed to augment()")
+            return data
+
         # Simple augmentation: shuffle persona traits
+        import random
         augmented_data = []
-        
+
         for example in data:
+            if 'persona' not in example:
+                continue
+
             persona = example['persona']
             if "|" in persona:
-                traits = persona.split("|")
-                # Create variations by shuffling traits
-                import random
-                random.shuffle(traits)
-                augmented_persona = " | ".join(traits)
-                
-                augmented_example = example.copy()
-                augmented_example['persona'] = augmented_persona
-                augmented_example['text'] = example['text'].replace(persona, augmented_persona)
-                augmented_data.append(augmented_example)
+                traits = [t.strip() for t in persona.split("|")]
+                if len(traits) > 1:
+                    # Create variations by shuffling traits
+                    shuffled_traits = traits.copy()
+                    random.shuffle(shuffled_traits)
+                    augmented_persona = " | ".join(shuffled_traits)
+
+                    augmented_example = example.copy()
+                    augmented_example['persona'] = augmented_persona
+                    augmented_example['text'] = example['text'].replace(persona, augmented_persona)
+                    augmented_data.append(augmented_example)
 
         # Combine original and augmented data
         combined_data = list(data) + augmented_data
         if not combined_data:
             return data
 
+        print(f"Augmented dataset: {len(data)} → {len(combined_data)} examples")
         dict_data = {key: [d[key] for d in combined_data] for key in combined_data[0].keys()}
         return Dataset.from_dict(dict_data)
     

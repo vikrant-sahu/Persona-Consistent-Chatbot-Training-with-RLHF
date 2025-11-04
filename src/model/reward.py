@@ -12,10 +12,11 @@ class RewardModel(nn.Module):
         self.config = config
         
         # Initialize reward model from base model
+        # Always use FP32 for model loading - let Trainer handle mixed precision
         self.model = AutoModelForSequenceClassification.from_pretrained(
             base_model,
             num_labels=config['num_labels'],
-            torch_dtype=torch.float16
+            torch_dtype=torch.float32
         )
         
         # Apply LoRA to reward model
