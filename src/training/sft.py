@@ -51,16 +51,29 @@ class SFTTrainer:
         )
         
         # Start training
-        trainer.train()
-        
+        train_result = trainer.train()
+
         # Save final model
         final_path = os.path.join(training_args.output_dir, "final")
         trainer.save_model(final_path)
-        
-        return {
-            'train_loss': trainer.state.log_history[-1]['loss'],
-            'eval_loss': trainer.state.log_history[-2]['eval_loss'] if len(trainer.state.log_history) > 1 else None
-        }
+
+        # Extract metrics safely from log history
+        metrics = {}
+        if hasattr(trainer.state, 'log_history') and len(trainer.state.log_history) > 0:
+            # Find last training loss
+            for entry in reversed(trainer.state.log_history):
+                if 'loss' in entry and 'train_loss' not in metrics:
+                    metrics['train_loss'] = entry['loss']
+                if 'eval_loss' in entry and 'eval_loss' not in metrics:
+                    metrics['eval_loss'] = entry['eval_loss']
+                if 'train_loss' in metrics and 'eval_loss' in metrics:
+                    break
+
+        # Add training result metrics if available
+        if hasattr(train_result, 'metrics'):
+            metrics.update(train_result.metrics)
+
+        return metrics
     
     def evaluate(self) -> Dict:
         """Evaluate model on validation set"""

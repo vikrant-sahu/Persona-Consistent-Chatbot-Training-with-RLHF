@@ -29,7 +29,21 @@ class DatasetLoader:
             # Legacy dataset (kept for backward compatibility)
             dataset_name = "bavard/personachat_truecased"
 
-        return load_dataset(dataset_name, split=split, cache_dir=self.cache_dir)
+        print(f"Loading {dataset_name} ({split} split)...")
+        try:
+            dataset = load_dataset(dataset_name, split=split, cache_dir=self.cache_dir)
+            print(f"✓ Loaded {len(dataset)} examples from {dataset_name}")
+            return dataset
+        except Exception as e:
+            print(f"✗ Error loading {dataset_name}: {e}")
+            print(f"Attempting to load with trust_remote_code=True...")
+            try:
+                dataset = load_dataset(dataset_name, split=split, cache_dir=self.cache_dir, trust_remote_code=True)
+                print(f"✓ Loaded {len(dataset)} examples from {dataset_name}")
+                return dataset
+            except Exception as e2:
+                print(f"✗ Failed to load dataset: {e2}")
+                raise RuntimeError(f"Could not load {dataset_name}. Please check internet connection and dataset availability.") from e2
 
     def load_blended_skill_talk(self, split: str = 'train') -> Dataset:
         """Load Blended Skill Talk dataset"""
